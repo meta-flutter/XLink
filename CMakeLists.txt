@@ -60,13 +60,18 @@ include(cmake/XLinkDependencies.cmake)
 
 if(XLINK_LIBUSB_SYSTEM)
     # Find system libusb
-    find_path(LIBUSB_INCLUDE_DIR NAMES libusb.h PATH_SUFFIXES "include" "libusb" "libusb-1.0")
-    find_library(LIBUSB_LIBRARY NAMES usb-1.0 PATH_SUFFIXES "lib")
-    if(NOT LIBUSB_INCLUDE_DIR OR NOT LIBUSB_LIBRARY)
+    if (UNIX) # Mac / Linux
+        find_package(PkgConfig REQUIRED)
+        pkg_check_modules(LIBUSB REQUIRED libusb-1.0)
+    else ()
+        find_path(LIBUSB_INCLUDE_DIRS NAMES libusb.h PATH_SUFFIXES "include" "libusb" "libusb-1.0")
+        find_library(LIBUSB_LIBRARY NAMES usb-1.0 PATH_SUFFIXES "lib")
+    endif ()
+    if(NOT LIBUSB_INCLUDE_DIRS OR NOT LIBUSB_LIBRARY)
         message(FATAL_ERROR "libusb is required")
     endif()
     target_include_directories(${TARGET_NAME}
-        PRIVATE "${LIBUSB_INCLUDE_DIR}"
+        PRIVATE "${LIBUSB_INCLUDE_DIRS}"
     )
     target_link_libraries(${TARGET_NAME}
         PUBLIC ${LIBUSB_LIBRARY}

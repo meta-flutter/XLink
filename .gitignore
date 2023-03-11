@@ -1,6 +1,9 @@
 .vscode/
 build/
 
+.idea/
+cmake-build*
+
 #git
 *.orig
 *_REMOTE_*
